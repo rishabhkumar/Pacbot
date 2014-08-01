@@ -1,0 +1,375 @@
+#include<stdio.h>
+#include<stdlib.h>
+#include<string.h>
+#include<dos.h>
+#include<time.h>
+void showMap(char map[11][11]);
+
+void makeMap(char Map[11][11], int m, int n, int t)
+{
+  int i, j;
+  for(i = 0; i<11; i++)
+  {
+    for(j = 0; j<11; j++)
+	{
+	  if(i%2 == 0 && j%2 != 0)
+	  {
+	    Map[i][j] = '-';
+      }
+	  else if(i%2 != 0 && j%2 == 0)
+	  {
+	    Map[i][j] = '|';
+	  }
+	  else
+	  {
+	    if(Map[i][j] != 'P' && Map[i][j] != 'B')
+		{
+		  Map[i][j] = ' ';
+		}  
+	  }
+	 }
+  }
+  Map[3][3] = Map[3][9] = Map[7][7] = 'X';
+  if(t == 1)
+  {
+    Map[m][n] = 'P';
+  }
+  else
+  {
+    Map[m][n] = 'B';
+  }
+  if(t == 1)
+  {
+    showMap(Map);
+  }
+ }
+
+
+
+void showMap(char Map[11][11])
+{
+  int i, j;
+  printf("\n\n\t");
+  for(i = 0; i<11; i++)
+  {
+    printf("\n\t\t\t");
+	for(j = 0; j<11; j++)
+	{
+	  printf("%c", Map[i][j]);
+	}
+  }
+ } 
+
+
+  
+/*void randomBlock(char Map[11][11])
+{
+  int n, i, j, count = 1, k = 0;
+  time_t t;
+  time(&t);
+  
+  while(k<3)
+  {
+    srand((unsigned) time(&t));
+    n = rand()%24 + 1;
+    for(i = 0; i<11; i++)
+    {
+      for(j = 0; j<11; j++)
+	  {
+	    if(Map[i][j] == ' ')
+  	    {Map[i][j] = count;
+	     count++;
+	    }
+	  }
+     }
+    for(i = 0; i<11; i++)
+    {
+      for(j = 0; j<11; j++)
+	  {
+	    if(Map[i][j] != n && i%2 != 0 && j%2 != 0)
+	    {
+	      Map[i][j] = ' ';
+	    }
+	    else
+	    {
+	      Map[i][j] = 'X';
+	    }
+	  }
+    }
+   k++;
+  }   
+}
+*/
+
+  
+   
+
+void playChance(char Map[11][11])
+{
+  int i , j , n;
+  time_t t;
+  time(&t);
+  for(i = 1; i<10; i = i + 2)
+  {
+    for(j = 1; j<10; j = j + 2)
+	{
+	  if(Map[i][j] == 'P')
+	  {
+	    Map[i][j] = ' ';
+		goto jump;
+	  }
+	 }
+   }
+  srand((unsigned) time(&t));
+   jump:
+  n = rand()%4 + 1;
+  if((n == 1 && i != 1 && Map[i-2][j] != 'X') || (n == 2 && i != 9 && Map[i+2][j] != 'X' ) || (n == 3 && j != 1 && Map[i][j-2] != 'X') || (n == 4 && j != 9 && Map[i][j+2] != 'X'))
+  {
+     switch(n)
+     {
+	    case 1: if(Map[i-2][j] == 'B')
+		        {
+				  printf("\nGame Over!");
+				  getch();
+				  exit(1);
+				}
+		        i = i - 2;
+		        break;
+	    case 2: if(Map[i+2][j] == 'B')
+		        {
+				  printf("\nGame Over!");
+				  getch();
+				  exit(1);
+				}
+				i = i + 2;
+	            break;
+	    case 3: if(Map[i][j-2] == 'B')
+		        {
+				  printf("\nGame Over!");
+				  getch();
+				  exit(1);
+				}
+		        j = j - 2;
+             	break;
+	    case 4: if(Map[i][j+2] == 'B')
+		        {
+				  printf("\nGame Over!");
+				  getch();
+				  exit(1);
+				}
+		        j = j + 2;
+	            break;
+	    default: printf("\nYou won't reach here!");
+     }
+  }
+  else
+  {
+	goto jump;
+  }
+  makeMap(Map, i, j, 1);
+ }
+	  
+  
+
+  
+void userChance(char Map[11][11], char key)
+{
+  int i, j;
+  for(i = 0; i<11; i++)
+  {
+    for(j = 0; j<11; j++)
+    {
+      if(Map[i][j] == 'B')
+      {	  
+        Map[i][j] = ' ';
+		goto jump;
+	  }
+	 }
+  }
+  jump:
+  if(key == 'w' && i != 1)
+  {
+    i = i - 2;
+	if(Map[i][j] == 'X')
+		 {
+		   printf("\nOh! You lost!");
+		   getch();
+		   exit(1);
+		 }
+	goto end;
+  }
+  else if(key == 's' && i != 9)
+       {
+	     i = i + 2;
+		 if(Map[i][j] == 'X')
+		 {
+		   printf("\nOh! You lost!");
+		   getch();
+		   exit(1);
+		 }
+	     goto end;
+       }
+  else if(key == 'a' && j != 1)
+       {
+         j = j - 2;
+	     if(Map[i][j] == 'X')
+		 {
+		   printf("\nOh! You lost!");
+		   getch();
+		   exit(1);
+		 }
+		 goto end;
+       }
+  else 
+  {
+     if(key == 'd' && j != 9)
+	 {
+	   j = j + 2;
+	   if(Map[i][j] == 'X')
+		 {
+		   printf("\nOh! You lost!");
+		   getch();
+		   exit(1);
+		 }
+	   goto end;
+	 }
+     else
+     {
+       printf("\nYou are Out!");
+       getch();
+       exit(1);
+     }	   
+   }
+   end:
+   makeMap(Map, i, j, 0);
+}   
+   
+  
+  
+void type(char a[])
+{
+  int i;
+  for(i = 0; a[i] != '\0'; i++)
+  {
+    printf("%c", a[i]);
+    delay(50);
+  }
+}  
+  
+  
+  
+int welcome()
+{
+  char a[] = "Welcome to the game of Pac - Bot!";
+  char b[] = "\n\nPlease Enter your name please: ";
+  char c[] = "\nPlease select the difficulty from below:\n1. Noob (Press 'n')\n2. General (Press 'g')\n3. Competition (Press 'c')\n";
+  char t, d[] = "Please Press Enter to Continue!";
+  char name[15];
+  clrscr();
+  printf("\n\n\n\t");
+  type(a);
+  type(b);
+  gets(name);
+  type(c);
+  type(name);
+  printf(" -> ");
+  t = getch();
+  printf("\n");
+  type(name);
+  printf(" ");
+  type(d);
+  getch();
+  if(t == 'n')
+  {
+    return 1;
+  }
+  else if(t == 'g')
+       {
+	     return 2;
+	   }
+       else
+       {
+         return 3;
+       }
+}	   
+  
+  
+void updateScore(char name[], char level[], int score)
+{
+  char a[] = "\nYour name ";
+  char b[] = " is going to be stored in the Database";
+  char c[] = "\nPlease press ENter to continue!"; 
+  int i = 0;
+  type(a);  
+  type(name);
+  type(b);
+  type(c);
+  getch();
+  FILE * fp;
+  fp = fopen("score.txt", "a");
+  strcat(name, "$");  
+  while(name[i] != '\0')
+  {
+    fputc(name[i], fp);
+	i++;
+  }
+  i = 0; 
+  strcat(level, "%");
+  while(level[i] != '\0')
+  {
+    fputc(level[i], fp);
+  }
+  i = 0;
+  
+  
+  
+  
+  
+  
+ 
+  void main()
+{
+  int n, l;
+  char frame[11][11], dir;
+  clock_t start, end;
+  char a[] = "\nPress Enter to play the game!";
+  clrscr();
+  l = welcome();
+  if(l == 1)
+  {
+    n = 500;
+  }
+  else if(l == 2)
+       {
+	     n = 300;
+	   }
+	   else
+	   {
+	     n = 100;
+	   }
+  makeMap(frame, 5, 3, 1);
+  makeMap(frame, 7, 5, 0);
+  system("cls");
+  showMap(frame);
+  type(a);
+  getch();
+  start = clock();
+  while(1)
+  {
+	if(kbhit())
+	{
+	  dir = getch();
+	  userChance(frame, dir);
+	
+	}
+	playChance(frame);
+	end = clock();
+	printf("\nTimer: %.0f sec", (end - start)/CLK_TCK); 
+	delay(n);
+	clrscr();
+  }
+  end:
+  printf("\nWell you lasted for %.0f seconds dude!", (end - start)/CLK_TCK);
+  printf("\nPress any key to exit!");
+  getch();
+}
